@@ -43,13 +43,11 @@
 (define (left T)(cadr T));returns left subtree
 (define (right T) (caddr T));returns right subtree
 
-;returns #t if V is a member of  T, else #f
 (define (tree-member? V T)
 (cond
 ((null? T) #f)
 ((equal? V (val T)) #t)
-((> V (val T)) (tree-member? V (right T)))
-(else (tree-member? V (left T)))))
+(else (or (tree-member? V (left T)) (tree-member? V (right T))))))
 
 ;returns a list from the tree in inorder form
 (define (inorder T)
@@ -79,23 +77,9 @@
 ;inserts new element into BST in proper position
 (define (insert-BST V T)
 (cond
-((and (null? (left T)) (null? (right T)))(list V))
-((and (< V (val T)) (null? (right T))) (cons (insert-BST V (left T) (val T))))
-((and (> V (val T)) (null? (left T)))(cons (val T) (insert-BST V (right T))))
-((> V (val T))(append (list (val T)) (left T) (insert-BST V (right T))))
-((< V (val T)) (append (list (val T)) (insert-BST V (left T)) (right T)))))
-
-(define (insert-BST V T)
-(cond
-;First check null conditions when we can insert V into T
-((and (null? (left T)) (null? (right T)) (> V (val T))) (list (val T) '() (list V '() '())))
-((and (null? (left T)) (null? (right T)) (< V (val T))) (list (val T) (list V '() '() '())))
-((and (null? (left T)) (< V (val T))) (append (list V '() '()) (right T)))
-((and (null? (right T)) (> V (val T))) (append (list V '() '()) (left T)))
-;append V to cases where we still need to traverse the tree
-((> V (val T))(append (list (val T)) (list (left T)) (list (insert-BST V (right T)))))
-((< V (val T)) (append (list (val T)) (list (insert-BST V (left T))) (list (right T))))
-(else (list (val T)))));value already in list or not comparable
+((null? T) (list V '() '()))
+((> V (val T)) (list (val T) (left T) (insert-BST V (right T))))
+(else (list (val T) (insert-BST V (left T)) (right T)))))
 ;Assignment Definition
 (define T '(13(5(1()())(8()(9()())))(22(17()())(25()()))));binary tree
 
@@ -123,4 +107,4 @@
 ;-----------------Question 3----------------------
 ;(deep-delete 3 '(1 2 3 (4 3) 5 (6 (3 7)) 8))
 ;-----------------Extra Credit---------------------
-;(insert-BST 20 T)
+(insert-BST 20 T)
